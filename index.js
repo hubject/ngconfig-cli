@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var ngConfig = require('ng-config');
 var yargs = require('yargs');
+var _ = require('lodash');
 
 // cli configuration
 var argv = yargs
@@ -44,8 +45,12 @@ var argv = yargs
   .argv;
 
 // main arguments
-var configPath = argv._[0];
-var ngConfigOutPath = argv._[1];
+var ngConfigOutPath = argv._.pop();
+var configPaths = argv._;
+
+var configs = configPaths.map(function (path) {
+  return JSON.parse(fs.readFileSync(path))
+})
 
 // ngConfig options
 var options = {
@@ -55,7 +60,7 @@ var options = {
   _export: argv.export,
   exportObjects: argv.exportObjects,
   imports: argv.imports,
-  constants: JSON.parse(fs.readFileSync(configPath))
+  constants: _.defaultsDeep.apply(_, configs)
 };
 
 // create angular constants template string
