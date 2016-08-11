@@ -6,6 +6,10 @@ import '<%= value %>';
 export const <%= key %> = <%= JSON.stringify(constants[key]) %>;
 <% }); %>
 
+<% if(interfaces) Object.keys(interfaces).forEach(function(key) { %>
+export interface <%= key %> <%= JSON.stringify(interfaces[key]).replace(/"(.*?)":"(.*?)"/g, '"$1": $2') %>
+<% }); %>
+
 <% if(_export) { %> export const <%= _export %> = <% } %>
 angular.module('<%= module %>'<% if(!useExistingModule) { %>, []<% } %>)
 

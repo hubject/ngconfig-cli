@@ -1,12 +1,13 @@
 var fs = require('fs');
 var path = require('path');
+var interfaceGenerator = require('./interface-generator');
 var ngConfig = require('ng-config');
 var yargs = require('yargs');
 var _ = require('lodash');
 
 // cli configuration
 var argv = yargs
-  .usage('ngconfig [configJsonPath] [outputJsPath] [--moduleName|-m <string>] [--useExistingModule|-x <boolean>] [--imports|-i <array>] [--exports|-e <string>]')
+  .usage('ngconfig [configJsonPath] [outputJsPath] [--moduleName|-m <string>] [--useExistingModule|-x <boolean>] [--interface|-t <boolean>] [--imports|-i <array>] [--exports|-e <string>]')
   .example('ngconfig src/config.dev.json src/app/config.js -m configuration')
   .example('ngconfig src/config.prod.json src/app/config.js -m configuration -x')
   .example('ngconfig src/config.prod.json src/app/config.ts -m configuration -e config')
@@ -41,16 +42,22 @@ var argv = yargs
     describe: 'Export constants directly',
     default: false
   })
+  .option('t', {
+    alias: 'interface',
+    type: 'boolean',
+    describe: 'Creates typescript interfaces if true',
+    default: false
+  })
   .demand(2)
   .argv;
 
 // main arguments
 var ngConfigOutPath = argv._.pop();
-var configPaths = argv._;
+var configPaths = [].concat(argv._);
 
 var configs = configPaths.map(function (path) {
   return JSON.parse(fs.readFileSync(path))
-})
+});
 
 // ngConfig options
 var options = {
@@ -60,6 +67,7 @@ var options = {
   _export: argv.export,
   exportObjects: argv.exportObjects,
   imports: argv.imports,
+  interfaces: argv.interface ? interfaceGenerator.generate(configs) : null,
   constants: _.defaultsDeep.apply(_, configs)
 };
 
