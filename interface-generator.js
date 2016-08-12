@@ -1,6 +1,13 @@
 var interfaces = {};
 
 module.exports = {
+
+  /**
+   * Generates interface definitions for specified value
+   * @param object {Object|Array}
+   * @param [customKey] {string}
+   * @returns {{}}
+   */
   generate: function (object, customKey) {
 
     [].concat(object).forEach(function (object) {
@@ -17,10 +24,10 @@ module.exports = {
 
 /**
  * Generates interface definition for specified object;
- * 
+ *
  * @param [parentKey]
- * @param object
- * @param isArray
+ * @param object {Object}
+ * @param isArray {boolean}
  * @returns {*}
  */
 function generateObjectInterface(parentKey, object, isArray) {
@@ -34,16 +41,16 @@ function generateObjectInterface(parentKey, object, isArray) {
       object[key] = generateValueInterface(key, object[key]);
     }
   }
-  if (typeName) interfaces[typeName] = object;
+  if (typeName) add(typeName, object);
 
   return typeName;
 }
 
 /**
  * Generates interface definition for specified key array pair
- * 
- * @param key
- * @param array
+ *
+ * @param key {string}
+ * @param array {Array}
  * @returns {*}
  */
 function generateArrayInterfaces(key, array) {
@@ -58,10 +65,10 @@ function generateArrayInterfaces(key, array) {
 
 /**
  * Generates interface definitions for specified key value pair
- * 
- * @param key
- * @param value
- * @param isArray
+ *
+ * @param key {string}
+ * @param value {any}
+ * @param isArray {boolean}
  * @returns {string}
  */
 function generateValueInterface(key, value, isArray) {
@@ -81,8 +88,8 @@ function generateValueInterface(key, value, isArray) {
 
 /**
  * Creates interface name by specified string
- * 
- * @param str
+ *
+ * @param str {string}
  * @param isArray
  * @returns {*}
  */
@@ -93,7 +100,7 @@ function getInterfaceName(str, isArray) {
 
   if (isArray) {
 
-    // remove last s if is array
+    // remove last s if isArray is true
     if (name.charAt(name.length - 1) === 's') {
 
       name = name.substr(0, name.length - 1);
@@ -104,8 +111,8 @@ function getInterfaceName(str, isArray) {
 
 /**
  * Capitalizes specified string
- * 
- * @param str
+ *
+ * @param str {string}
  * @returns {string}
  */
 function capitalize(str) {
@@ -115,10 +122,34 @@ function capitalize(str) {
 
 /**
  * Copies specified object by JSON.stringify and JSON.parse
- * 
- * @param object
- * @returns {object}
+ *
+ * @param object {Object}
+ * @returns {Object}
  */
 function copy(object) {
   return JSON.parse(JSON.stringify(object));
+}
+
+/**
+ * Adds a new or extends an existing interface
+ * @param typeName {string}
+ * @param object {Object}
+ */
+function add(typeName, object) {
+
+  if (interfaces[typeName]) {
+
+    // interface already exists, so we will
+    // extend this interface by coping each property
+    // to exiting one
+    for(var key in object) {
+      if(object.hasOwnProperty(key) &&
+        !(key in interfaces[typeName])) {
+        interfaces[typeName][key] = object[key];
+      }
+    }
+  } else {
+
+    interfaces[typeName] = object
+  }
 }
