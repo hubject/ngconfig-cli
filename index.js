@@ -59,6 +59,8 @@ var configs = configPaths.map(function (path) {
   return JSON.parse(fs.readFileSync(path))
 });
 
+var mergedConfig = _.defaultsDeep.apply(_, configs);
+
 // ngConfig options
 var options = {
   template: path.join(__dirname, './module.tpl'),
@@ -67,8 +69,8 @@ var options = {
   _export: argv.export,
   exportObjects: argv.exportObjects,
   imports: argv.imports,
-  interfaces: argv.interface ? interfaceGenerator.generate(configs) : null,
-  constants: _.defaultsDeep.apply(_, configs)
+  interfaces: argv.interface ? interfaceGenerator.generate(mergedConfig) : null,
+  constants: mergedConfig
 };
 
 // create angular constants template string
