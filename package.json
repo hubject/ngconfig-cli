@@ -1,7 +1,7 @@
 {
-  "name": "ngconfig-cli",
+  "name": "@hubject/ngconfig",
   "version": "1.0.0",
-  "description": "",
+  "description": "A command line tool to create angular constants from json files.",
   "main": "index.js",
   "bin": {
     "ngconfig": "./bin/ngconfig"
